@@ -26,7 +26,7 @@ public class Response<T> {
     /** Callback interface for delivering parsed responses. */
     public interface Listener<T> {
         /** Called when a response is received. */
-        public void onResponse(T response);
+        public void onResponse(T response, int responseCode);
     }
 
     /** Callback interface for delivering error responses. */
@@ -39,21 +39,24 @@ public class Response<T> {
     }
 
     /** Returns a successful response containing the parsed result. */
-    public static <T> Response<T> success(T result, Cache.Entry cacheEntry) {
-        return new Response<T>(result, cacheEntry);
+    public static <T> Response<T> success(T result, Cache.Entry cacheEntry, int responseCode) {
+        return new Response<T>(result, cacheEntry, responseCode);
     }
 
     /**
      * Returns a failed response containing the given error code and an optional
      * localized message displayed to the user.
      */
-    public static <T> Response<T> error(VolleyError error) {
-        return new Response<T>(error);
+    public static <T> Response<T> error(VolleyError error, int responseCode) {
+        return new Response<T>(error, responseCode);
     }
 
     /** Parsed response, or null in the case of error. */
     public final T result;
 
+    /** Response code of response */
+    public final int responseCode;
+    
     /** Cache metadata for this response, or null in the case of error. */
     public final Cache.Entry cacheEntry;
 
@@ -71,15 +74,17 @@ public class Response<T> {
     }
 
 
-    private Response(T result, Cache.Entry cacheEntry) {
+    private Response(T result, Cache.Entry cacheEntry, int responseCode) {
         this.result = result;
         this.cacheEntry = cacheEntry;
         this.error = null;
+        this.responseCode = responseCode;
     }
 
-    private Response(VolleyError error) {
+    private Response(VolleyError error, int responseCode) {
         this.result = null;
         this.cacheEntry = null;
         this.error = error;
+        this.responseCode = responseCode;
     }
 }

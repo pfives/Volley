@@ -127,16 +127,16 @@ public class NetworkDispatcher extends Thread {
                 request.markDelivered();
                 mDelivery.postResponse(request, response);
             } catch (VolleyError volleyError) {
-                parseAndDeliverNetworkError(request, volleyError);
+                parseAndDeliverNetworkError(request, volleyError, 500);
             } catch (Exception e) {
                 VolleyLog.e(e, "Unhandled exception %s", e.toString());
-                mDelivery.postError(request, new VolleyError(e));
+                mDelivery.postError(request, new VolleyError(e), 500);
             }
         }
     }
 
-    private void parseAndDeliverNetworkError(Request<?> request, VolleyError error) {
+    private void parseAndDeliverNetworkError(Request<?> request, VolleyError error, int responseCode) {
         error = request.parseNetworkError(error);
-        mDelivery.postError(request, error);
+        mDelivery.postError(request, error, responseCode);
     }
 }

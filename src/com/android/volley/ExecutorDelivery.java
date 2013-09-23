@@ -63,9 +63,9 @@ public class ExecutorDelivery implements ResponseDelivery {
     }
 
     @Override
-    public void postError(Request<?> request, VolleyError error) {
+    public void postError(Request<?> request, VolleyError error, int statusCode) {
         request.addMarker("post-error");
-        Response<?> response = Response.error(error);
+        Response<?> response = Response.error(error, statusCode);
         mResponsePoster.execute(new ResponseDeliveryRunnable(request, response, null));
     }
 
@@ -96,7 +96,7 @@ public class ExecutorDelivery implements ResponseDelivery {
 
             // Deliver a normal response or error, depending.
             if (mResponse.isSuccess()) {
-                mRequest.deliverResponse(mResponse.result);
+                mRequest.deliverResponse(mResponse.result, mResponse.responseCode);
             } else {
                 mRequest.deliverError(mResponse.error);
             }
